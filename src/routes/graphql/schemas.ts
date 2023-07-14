@@ -1,4 +1,5 @@
 import { Type } from '@fastify/type-provider-typebox';
+import { buildSchema } from 'graphql';
 
 export const gqlResponseSchema = Type.Partial(
   Type.Object({
@@ -18,3 +19,9 @@ export const createGqlResponseSchema = {
     },
   ),
 };
+
+export const gqlSchema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`)
