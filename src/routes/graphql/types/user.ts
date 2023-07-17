@@ -1,12 +1,16 @@
 import { GraphQLFloat, GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-import { IUUID, UUIDType } from "./uuid.js";
+import { UUIDType } from "./uuid.js";
 
 export interface UserInput {
   name: string;
   balance: number;
 };
 
-export interface User extends IUUID, UserInput {}
+export interface UserID {
+  userId: string;
+}
+
+export interface User extends UserID, UserInput {}
 
 export const userType = new GraphQLObjectType({
   name: "User",

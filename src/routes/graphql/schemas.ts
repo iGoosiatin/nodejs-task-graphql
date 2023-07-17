@@ -2,6 +2,7 @@ import { Type } from '@fastify/type-provider-typebox';
 import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { userType, createUserInputType, updateUserInputType } from './types/user.js';
+import { memberIdType, memberType } from './types/member.js';
 
 
 export const gqlResponseSchema = Type.Partial(
@@ -29,11 +30,20 @@ const query = new GraphQLObjectType({
     user: {
       type: userType,
       args: {
-        id: { type: new GraphQLNonNull(UUIDType) },
+        userId: { type: new GraphQLNonNull(UUIDType) },
       },
     },
     users: {
       type: new GraphQLList(userType),
+    },
+    memberType: {
+      type: memberType,
+      args: {
+        memberTypeId: { type: new GraphQLNonNull(memberIdType) },
+      },
+    },
+    memberTypes: {
+      type: new GraphQLList(memberType),
     }
   },
 });
@@ -50,14 +60,14 @@ const mutation = new GraphQLObjectType({
     changeUser: {
       type: userType,
       args: {
-        id: { type: new GraphQLNonNull(UUIDType) },
+        userId: { type: new GraphQLNonNull(UUIDType) },
         user: { type: updateUserInputType }
       }
     },
     deleteUser: {
       type: UUIDType,
       args: {
-        id: { type: new GraphQLNonNull(UUIDType) },
+        userId: { type: new GraphQLNonNull(UUIDType) },
       }
     }
   },
