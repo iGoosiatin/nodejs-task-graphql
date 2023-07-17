@@ -22,10 +22,10 @@ export default {
   profiles: getProfiles,
 }
 
-export const getProfileByUserId = async (args: ID) => {
+export const getProfileByUserId = async (userId: string) => {
   const profile = await prisma.profile.findUnique({
     where: {
-      userId: args.id,
+      userId,
     },
   });
   return profile;

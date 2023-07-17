@@ -1,8 +1,13 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { UUIDType } from "./uuid.js";
-import { userType } from "./user.js";
+import { ID } from "./common.js";
 
-//export interface PostInput {};
+export interface PostInput {
+  title: string;
+  content: string;
+};
+
+export interface Post extends ID, PostInput {}
 
 export const postType = new GraphQLObjectType({
   name: "Post",
@@ -10,6 +15,5 @@ export const postType = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(UUIDType) },
     title: { type: new GraphQLNonNull(GraphQLString) },
     content: { type: new GraphQLNonNull(GraphQLString) },
-    author: { type: new GraphQLNonNull(userType) },
   },
 })
