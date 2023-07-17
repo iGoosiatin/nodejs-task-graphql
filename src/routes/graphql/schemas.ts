@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Type } from '@fastify/type-provider-typebox';
 import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { userType, createUserInputType, updateUserInputType } from './types/user.js';
-import { memberIdType, memberType } from './types/member.js';
+import { memberType, memberTypeIdEnum } from './types/member.js';
 import { postType } from './types/post.js';
 import { profileType } from './types/profile.js';
 
@@ -41,7 +42,7 @@ const query = new GraphQLObjectType({
     memberType: {
       type: memberType,
       args: {
-        id: { type: new GraphQLNonNull(memberIdType) },
+        id: { type: new GraphQLNonNull(memberTypeIdEnum) },
       },
     },
     memberTypes: {

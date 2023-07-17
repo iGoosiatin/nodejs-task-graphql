@@ -3,7 +3,7 @@ import { ID } from "../types/common.js";
 
 const prisma = new PrismaClient();
 
-const getMemberType = async (args: ID) => {
+export const getMemberType = async (args: ID) => {
   const memberType = await prisma.memberType.findUnique({
     where: {
       id: args.id,
