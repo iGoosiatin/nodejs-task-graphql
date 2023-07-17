@@ -6,12 +6,6 @@ export interface UserInput {
   balance: number;
 };
 
-export interface UserID {
-  userId: string;
-}
-
-export interface User extends UserID, UserInput {}
-
 export const userType = new GraphQLObjectType({
   name: "User",
   fields: {

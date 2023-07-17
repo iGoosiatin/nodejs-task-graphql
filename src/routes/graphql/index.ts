@@ -3,8 +3,15 @@ import { graphql } from "graphql";
 import { createGqlResponseSchema, gqlResponseSchema, gqlSchema } from './schemas.js';
 import userResolvers from './resolvers/userResolvers.js';
 import memberTypeResolvers from './resolvers/memberTypeResolvers.js';
+import postResolvers from './resolvers/postResolvers.js';
+import profileResolvers from './resolvers/profileResolvers.js';
 
-const rootValue = { ...userResolvers, ...memberTypeResolvers };
+const rootValue = {
+  ...userResolvers,
+  ...memberTypeResolvers,
+  ...postResolvers,
+  ...profileResolvers
+};
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.route({

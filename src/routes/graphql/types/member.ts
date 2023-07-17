@@ -1,16 +1,16 @@
-import { GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, Kind } from "graphql";
+import { GraphQLError, GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, Kind } from "graphql";
 import { MemberTypeId } from '../../member-types/schemas.js'
+
+class InvalidMemberTypeError extends GraphQLError {
+  constructor() {
+    super('Allowed values are: basic, business');
+  }
+}
 
 export interface MemberTypeInput {
   name: string;
   balance: number;
 };
-
-export interface MemberTypeID {
-  memberTypeId: string;
-}
-
-export interface MemberType extends MemberTypeID, MemberTypeInput {}
 
 const isMemberType = (value: unknown): value is MemberTypeId => {
   if (typeof value !== 'string') {
@@ -29,16 +29,16 @@ const isMemberType = (value: unknown): value is MemberTypeId => {
 }
 
 export const memberIdType = new GraphQLScalarType({
-  name: 'MemberID',
+  name: 'MemberTypeId',
   serialize(value) {
     if (!isMemberType(value)) {
-      throw new TypeError('Allowed values are "basic" or "business".');
+      throw new InvalidMemberTypeError();
     }
     return value;
   },
   parseValue(value) {
     if (!isMemberType(value)) {
-      throw new TypeError('Allowed values are "basic" or "business".');
+      throw new InvalidMemberTypeError();
     }
     return value;
   },
@@ -48,7 +48,7 @@ export const memberIdType = new GraphQLScalarType({
         return ast.value;
       }
     }
-    return undefined;
+    throw new InvalidMemberTypeError();
   },
 });
 

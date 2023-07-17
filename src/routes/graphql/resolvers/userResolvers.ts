@@ -1,12 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { UserInput, UserID } from "../types/user.js";
+import { UserInput } from "../types/user.js";
+import { ID } from "../types/common.js";
 
 const prisma = new PrismaClient();
 
-const getUser = async (args: UserID) => {
+const getUser = async (args: ID) => {
   const user = await prisma.user.findUnique({
     where: {
-      id: args.userId,
+      id: args.id,
     },
   });
   return user;
@@ -24,11 +25,11 @@ const createUser = async (args: {user: UserInput }) => {
   return user;
 }
 
-const changeUser = async (args: UserID & { user: Partial<UserInput> }) => {
+const changeUser = async (args: ID & { user: Partial<UserInput> }) => {
   try {
     const user = await prisma.user.update({
       where: {
-        id: args.userId
+        id: args.id
       },
       data: args.user
     });
@@ -39,14 +40,14 @@ const changeUser = async (args: UserID & { user: Partial<UserInput> }) => {
 
 }
 
-const deleteUser = async (args: UserID) => {
+const deleteUser = async (args: ID) => {
   try {
     await prisma.user.delete({
       where: {
-        id: args.userId,
+        id: args.id,
       },
     });
-    return args.userId;
+    return args.id;
   } catch {
     return null;
   }

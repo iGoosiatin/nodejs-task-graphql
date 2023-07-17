@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { MemberTypeID } from "../types/member.js";
+import { ID } from "../types/common.js";
 
 const prisma = new PrismaClient();
 
-const getMemberType = async (args: MemberTypeID) => {
+const getMemberType = async (args: ID) => {
   const memberType = await prisma.memberType.findUnique({
     where: {
-      id: args.memberTypeId,
+      id: args.id,
     },
   });
   return memberType;

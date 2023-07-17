@@ -3,6 +3,8 @@ import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'g
 import { UUIDType } from './types/uuid.js';
 import { userType, createUserInputType, updateUserInputType } from './types/user.js';
 import { memberIdType, memberType } from './types/member.js';
+import { postType } from './types/post.js';
+import { profileType } from './types/profile.js';
 
 
 export const gqlResponseSchema = Type.Partial(
@@ -30,7 +32,7 @@ const query = new GraphQLObjectType({
     user: {
       type: userType,
       args: {
-        userId: { type: new GraphQLNonNull(UUIDType) },
+        id: { type: new GraphQLNonNull(UUIDType) },
       },
     },
     users: {
@@ -39,12 +41,30 @@ const query = new GraphQLObjectType({
     memberType: {
       type: memberType,
       args: {
-        memberTypeId: { type: new GraphQLNonNull(memberIdType) },
+        id: { type: new GraphQLNonNull(memberIdType) },
       },
     },
     memberTypes: {
       type: new GraphQLList(memberType),
-    }
+    },
+    post: {
+      type: postType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+    },
+    posts: {
+      type: new GraphQLList(postType),
+    },
+    profile: {
+      type: profileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+    },
+    profiles: {
+      type: new GraphQLList(profileType),
+    },
   },
 });
 
@@ -60,14 +80,14 @@ const mutation = new GraphQLObjectType({
     changeUser: {
       type: userType,
       args: {
-        userId: { type: new GraphQLNonNull(UUIDType) },
+        id: { type: new GraphQLNonNull(UUIDType) },
         user: { type: updateUserInputType }
       }
     },
     deleteUser: {
       type: UUIDType,
       args: {
-        userId: { type: new GraphQLNonNull(UUIDType) },
+        id: { type: new GraphQLNonNull(UUIDType) },
       }
     }
   },
