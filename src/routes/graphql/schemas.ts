@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Type } from '@fastify/type-provider-typebox';
-import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
+import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { userType, createUserInputType, changeUserInputType } from './types/user.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
-import { postType } from './types/post.js';
-import { profileType } from './types/profile.js';
+import { createPostInputType, postType } from './types/post.js';
+import { createProfileInputType, profileType } from './types/profile.js';
 
 
 export const gqlResponseSchema = Type.Partial(
@@ -90,6 +90,18 @@ const mutation = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       }
+    },
+    createPost: {
+      type: postType,
+      args: {
+        dto: { type: createPostInputType }
+      },
+    },
+    createProfile: {
+      type: profileType,
+      args: {
+        dto: { type: createProfileInputType }
+      },
     },
   },
 });

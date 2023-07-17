@@ -18,7 +18,7 @@ const getUsers = async () => {
   return users;
 }
 
-const createUser = async (args: {dto: UserInput }) => {
+const createUser = async (args: { dto: UserInput }) => {
   const user = await prisma.user.create({
     data: args.dto
   });
@@ -61,14 +61,14 @@ export default {
   deleteUser,
 }
 
-export const getUserSubscriptions = async(subscriberId: string) => {
+export const getUserSubscriptions = async (subscriberId: string) => {
   const subscriptions = await prisma.user.findMany(
     { where: { subscribedToUser: { some: { subscriberId } } } }
   );
   return subscriptions;
 }
 
-export const getUserFollowers = async(authorId: string) => {
+export const getUserFollowers = async (authorId: string) => {
   const followers = await prisma.user.findMany(
     { where: { userSubscribedTo: { some: { authorId } } } }
   );
