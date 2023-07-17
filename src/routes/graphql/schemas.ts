@@ -2,7 +2,7 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { UUIDType } from './types/uuid.js';
-import { userType, createUserInputType, updateUserInputType } from './types/user.js';
+import { userType, createUserInputType, changeUserInputType } from './types/user.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
 import { postType } from './types/post.js';
 import { profileType } from './types/profile.js';
@@ -75,14 +75,14 @@ const mutation = new GraphQLObjectType({
     createUser: {
       type: userType,
       args: {
-        user: { type: createUserInputType }
+        dto: { type: createUserInputType }
       },
     },
     changeUser: {
       type: userType,
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
-        user: { type: updateUserInputType }
+        dto: { type: changeUserInputType }
       }
     },
     deleteUser: {
@@ -90,7 +90,7 @@ const mutation = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       }
-    }
+    },
   },
 });
 

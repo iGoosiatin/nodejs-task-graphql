@@ -18,20 +18,20 @@ const getUsers = async () => {
   return users;
 }
 
-const createUser = async (args: {user: UserInput }) => {
+const createUser = async (args: {dto: UserInput }) => {
   const user = await prisma.user.create({
-    data: args.user
+    data: args.dto
   });
   return user;
 }
 
-const changeUser = async (args: ID & { user: Partial<UserInput> }) => {
+const changeUser = async (args: ID & { dto: Partial<UserInput> }) => {
   try {
     const user = await prisma.user.update({
       where: {
         id: args.id
       },
-      data: args.user
+      data: args.dto
     });
     return user;
   } catch {
