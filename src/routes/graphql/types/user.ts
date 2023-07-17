@@ -1,10 +1,11 @@
-import { GraphQLFloat, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLFloat, GraphQLInputObjectType, GraphQLInterfaceType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { UUIDType } from "./uuid.js";
 import { ID } from "./common.js";
 import { profileType } from "./profile.js";
 import { getProfileByUserId } from "../resolvers/profileResolvers.js";
 import { postType } from "./post.js";
 import { getPostsByUserId } from "../resolvers/postResolvers.js";
+import { getUserFollowers, getUserSubscriptions } from "../resolvers/userResolvers.js";
 
 export interface UserInput {
   name: string;
@@ -15,7 +16,7 @@ export interface User extends ID, UserInput {};
 
 export const userType = new GraphQLObjectType({
   name: "User",
-  fields: {
+  fields: () => ({
     id: { type: new GraphQLNonNull(UUIDType) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
@@ -26,9 +27,17 @@ export const userType = new GraphQLObjectType({
     posts: {
       type: new GraphQLList(postType),
       resolve: async(source: User) => await getPostsByUserId(source.id),
+    },
+    userSubscribedTo: {
+      type: new GraphQLList(userType),
+      resolve :async (source: User) => await getUserSubscriptions(source.id),
+    },
+    subscribedToUser: {
+      type: new GraphQLList(userType),
+      resolve :async (source: User) => await getUserFollowers(source.id),
     }
-  },
-})  
+  }),
+});
 
 export const createUserInputType = new GraphQLInputObjectType({
   name: "NewUserInput",
@@ -36,7 +45,7 @@ export const createUserInputType = new GraphQLInputObjectType({
     name: { type: new GraphQLNonNull(GraphQLString) },
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
   },
-})
+});
 
 export const updateUserInputType = new GraphQLInputObjectType({
   name: "UserInput",
@@ -44,4 +53,4 @@ export const updateUserInputType = new GraphQLInputObjectType({
     name: { type: GraphQLString },
     balance: { type: GraphQLFloat },
   },
-})
+});
