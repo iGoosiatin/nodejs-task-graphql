@@ -4,12 +4,8 @@ import { PostInput } from "../types/post.js";
 
 const prisma = new PrismaClient();
 
-const getPost = async (args: ID) => {
-  const post = await prisma.post.findUnique({
-    where: {
-      id: args.id,
-    },
-  });
+const getPost = async ({ id }: ID) => {
+  const post = await prisma.post.findUnique({ where: { id } });
   return post;
 };
 
@@ -18,20 +14,16 @@ const getPosts = async () => {
   return posts;
 };
 
-const createPost = async (args: { dto: PostInput }) => {
-  const post = await prisma.post.create({
-    data: args.dto
-  });
+const createPost = async ({ dto: data }: { dto: PostInput }) => {
+  const post = await prisma.post.create({ data });
   return post;
 };
 
-const changePost = async (args: ID & { dto: Partial<PostInput> }) => {
+const changePost = async ({ id, dto: data}: ID & { dto: Partial<PostInput> }) => {
   try {
     const post = await prisma.post.update({
-      where: {
-        id: args.id
-      },
-      data: args.dto
+      where: { id },
+      data,
     });
     return post;
   } catch {
@@ -39,14 +31,10 @@ const changePost = async (args: ID & { dto: Partial<PostInput> }) => {
   }
 };
 
-const deletePost = async (args: ID) => {
+const deletePost = async ({ id }: ID) => {
   try {
-    await prisma.post.delete({
-      where: {
-        id: args.id,
-      },
-    });
-    return args.id;
+    await prisma.post.delete({ where: { id } });
+    return id;
   } catch {
     return null;
   }

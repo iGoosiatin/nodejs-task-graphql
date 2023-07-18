@@ -1,15 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { UserInput } from "../types/user.js";
-import { ID } from "../types/common.js";
+import { ID, Subscription } from "../types/common.js";
 
 const prisma = new PrismaClient();
 
-export const getUser = async (args: ID) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: args.id,
-    },
-  });
+export const getUser = async ({ id }: ID) => {
+  const user = await prisma.user.findUnique({ where: { id } });
   return user;
 };
 
@@ -18,20 +14,16 @@ const getUsers = async () => {
   return users;
 };
 
-const createUser = async (args: { dto: UserInput }) => {
-  const user = await prisma.user.create({
-    data: args.dto
-  });
+const createUser = async ({ dto: data }: { dto: UserInput }) => {
+  const user = await prisma.user.create({ data });
   return user;
 };
 
-const changeUser = async (args: ID & { dto: Partial<UserInput> }) => {
+const changeUser = async ({ id, dto: data}: ID & { dto: Partial<UserInput> }) => {
   try {
     const user = await prisma.user.update({
-      where: {
-        id: args.id
-      },
-      data: args.dto
+      where: { id },
+      data
     });
     return user;
   } catch {
@@ -39,18 +31,37 @@ const changeUser = async (args: ID & { dto: Partial<UserInput> }) => {
   }
 };
 
-const deleteUser = async (args: ID) => {
+const deleteUser = async ({ id }: ID) => {
   try {
-    await prisma.user.delete({
-      where: {
-        id: args.id,
-      },
-    });
-    return args.id;
+    await prisma.user.delete({ where: { id } });
+    return id;
   } catch {
     return null;
   }
 };
+
+const subscribeTo = async ({ userId: id, authorId }: Subscription) => {
+  try {
+    const user = prisma.user.update({
+      where: { id },
+      data: { userSubscribedTo: { create: { authorId } } },
+    });
+    return user;
+  } catch {
+    return null;
+  }
+};
+
+const unsubscribeFrom = async ({ userId: subscriberId, authorId }: Subscription) => {
+  try {
+    await prisma.subscribersOnAuthors.delete({
+      where: { subscriberId_authorId: { subscriberId, authorId } },
+    });
+  } catch {
+    return null;
+  }
+};
+
 
 export default {
   user: getUser,
@@ -58,6 +69,8 @@ export default {
   createUser,
   changeUser,
   deleteUser,
+  subscribeTo,
+  unsubscribeFrom,
 };
 
 export const getUserSubscriptions = async (subscriberId: string) => {

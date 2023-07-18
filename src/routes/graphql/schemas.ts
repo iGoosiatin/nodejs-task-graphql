@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Type } from '@fastify/type-provider-typebox';
-import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
+import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLSchema, GraphQLString } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { userType, createUserInputType, changeUserInputType } from './types/user.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
@@ -129,6 +129,20 @@ const mutation = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(UUIDType) },
       }
     },
+    subscribeTo: {
+      type: userType,
+      args: {
+        userId: { type: new GraphQLNonNull(UUIDType) },
+        authorId: { type: new GraphQLNonNull(UUIDType) },
+      }
+    },
+    unsubscribeFrom: {
+      type: GraphQLString,
+      args: {
+        userId: { type: new GraphQLNonNull(UUIDType) },
+        authorId: { type: new GraphQLNonNull(UUIDType) },
+      }
+    }
   },
 });
 
