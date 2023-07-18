@@ -29,6 +29,20 @@ const createProfile = async (args: { dto: ProfileInput }) => {
   }
 };
 
+const changeProfile = async (args: ID & { dto: Partial<ProfileInput> }) => {
+  try {
+    const profile = await prisma.profile.update({
+      where: {
+        id: args.id
+      },
+      data: args.dto
+    });
+    return profile;
+  } catch {
+    return null;
+  }
+};
+
 const deleteProfile = async (args: ID) => {
   try {
     await prisma.profile.delete({
@@ -46,6 +60,7 @@ export default {
   profile: getProfile,
   profiles: getProfiles,
   createProfile,
+  changeProfile,
   deleteProfile,
 };
 

@@ -25,6 +25,20 @@ const createPost = async (args: { dto: PostInput }) => {
   return post;
 };
 
+const changePost = async (args: ID & { dto: Partial<PostInput> }) => {
+  try {
+    const post = await prisma.post.update({
+      where: {
+        id: args.id
+      },
+      data: args.dto
+    });
+    return post;
+  } catch {
+    return null;
+  }
+};
+
 const deletePost = async (args: ID) => {
   try {
     await prisma.post.delete({
@@ -42,6 +56,7 @@ export default {
   post: getPost,
   posts: getPosts,
   createPost,
+  changePost,
   deletePost,
 };
 

@@ -4,8 +4,8 @@ import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'g
 import { UUIDType } from './types/uuid.js';
 import { userType, createUserInputType, changeUserInputType } from './types/user.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
-import { createPostInputType, postType } from './types/post.js';
-import { createProfileInputType, profileType } from './types/profile.js';
+import { changePostInputType, createPostInputType, postType } from './types/post.js';
+import { changeProfileInputType, createProfileInputType, profileType } from './types/profile.js';
 
 
 export const gqlResponseSchema = Type.Partial(
@@ -97,6 +97,13 @@ const mutation = new GraphQLObjectType({
         dto: { type: createPostInputType }
       },
     },
+    changePost: {
+      type: postType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+        dto: { type: changePostInputType }
+      }
+    },
     deletePost: {
       type: UUIDType,
       args: {
@@ -108,6 +115,13 @@ const mutation = new GraphQLObjectType({
       args: {
         dto: { type: createProfileInputType }
       },
+    },
+    changeProfile: {
+      type: profileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+        dto: { type: changeProfileInputType }
+      }
     },
     deleteProfile: {
       type: UUIDType,
