@@ -21,7 +21,7 @@ export const userType = new GraphQLObjectType({
     name: { type: new GraphQLNonNull(GraphQLString) },
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
     profile: { 
-      type: profileType,
+      type: profileType as GraphQLObjectType,
       resolve: async(source: User) => await getProfileByUserId(source.id),
     },
     posts: {

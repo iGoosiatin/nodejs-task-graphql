@@ -19,10 +19,14 @@ const getProfiles = async () => {
 }
 
 const createProfile = async (args: { dto: ProfileInput }) => {
-  const profile = await prisma.profile.create({
-    data: args.dto,
-  });
-  return profile;
+  try {
+    const profile = await prisma.profile.create({
+      data: args.dto
+    });
+    return profile;
+  } catch {
+    return null;
+  }
 };
 
 export default {
