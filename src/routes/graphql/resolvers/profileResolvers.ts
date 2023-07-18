@@ -1,21 +1,19 @@
-import { PrismaClient } from "@prisma/client";
-import { ID } from "../types/common.js";
+import { Context, ID, NoArgs } from "../types/common.js";
 import { ProfileInput } from "../types/profile.js";
 import { MemberTypeId } from "../../member-types/schemas.js";
 
-const prisma = new PrismaClient();
 
-const getProfile = async ({ id }: ID) => {
+const getProfile = async ({ id }: ID, { prisma }: Context) => {
   const profile = await prisma.profile.findUnique({ where: { id } });
   return profile;
 };
 
-const getProfiles = async () => {
+const getProfiles = async (_: NoArgs, { prisma }: Context) => {
   const profiles = await prisma.profile.findMany();
   return profiles;
 }
 
-const createProfile = async ({ dto: data}: { dto: ProfileInput }) => {
+const createProfile = async ({ dto: data}: { dto: ProfileInput }, { prisma }: Context) => {
   try {
     const profile = await prisma.profile.create({ data });
     return profile;
@@ -24,7 +22,7 @@ const createProfile = async ({ dto: data}: { dto: ProfileInput }) => {
   }
 };
 
-const changeProfile = async ({ id, dto: data}: ID & { dto: Partial<ProfileInput> }) => {
+const changeProfile = async ({ id, dto: data}: ID & { dto: Partial<ProfileInput> }, { prisma }: Context) => {
   try {
     const profile = await prisma.profile.update({
       where: { id },
@@ -36,7 +34,7 @@ const changeProfile = async ({ id, dto: data}: ID & { dto: Partial<ProfileInput>
   }
 };
 
-const deleteProfile = async ({ id }: ID) => {
+const deleteProfile = async ({ id }: ID, { prisma }: Context) => {
   try {
     await prisma.profile.delete({ where: { id } });
     return id;
@@ -53,14 +51,14 @@ export default {
   deleteProfile,
 };
 
-export const getProfileByUserId = async (userId: string) => {
+export const getProfileByUserId = async (userId: string, { prisma }: Context) => {
   const profile = await prisma.profile.findUnique({
     where: { userId }
   });
   return profile;
 };
 
-export const getProfilesByMemberTypeId = async (memberTypeId: MemberTypeId) => {
+export const getProfilesByMemberTypeId = async (memberTypeId: MemberTypeId, { prisma }: Context) => {
   const profiles = await prisma.profile.findMany({ where: { memberTypeId } });
   return profiles;
 }

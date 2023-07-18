@@ -1,25 +1,23 @@
-import { PrismaClient } from "@prisma/client";
-import { ID } from "../types/common.js";
+
+import { Context, ID, NoArgs } from "../types/common.js";
 import { PostInput } from "../types/post.js";
 
-const prisma = new PrismaClient();
-
-const getPost = async ({ id }: ID) => {
+const getPost = async ({ id }: ID, { prisma }: Context) => {
   const post = await prisma.post.findUnique({ where: { id } });
   return post;
 };
 
-const getPosts = async () => {
+const getPosts = async (_: NoArgs, { prisma }: Context) => {
   const posts = await prisma.post.findMany();
   return posts;
 };
 
-const createPost = async ({ dto: data }: { dto: PostInput }) => {
+const createPost = async ({ dto: data }: { dto: PostInput }, { prisma }: Context) => {
   const post = await prisma.post.create({ data });
   return post;
 };
 
-const changePost = async ({ id, dto: data}: ID & { dto: Partial<PostInput> }) => {
+const changePost = async ({ id, dto: data}: ID & { dto: Partial<PostInput> }, { prisma }: Context) => {
   try {
     const post = await prisma.post.update({
       where: { id },
@@ -31,7 +29,7 @@ const changePost = async ({ id, dto: data}: ID & { dto: Partial<PostInput> }) =>
   }
 };
 
-const deletePost = async ({ id }: ID) => {
+const deletePost = async ({ id }: ID, { prisma }: Context) => {
   try {
     await prisma.post.delete({ where: { id } });
     return id;
@@ -48,7 +46,7 @@ export default {
   deletePost,
 };
 
-export const getPostsByUserId = async (authorId: string) => {
+export const getPostsByUserId = async (authorId: string, { prisma }: Context) => {
   const posts = await prisma.post.findMany({ where: { authorId } });
   return posts;
 };

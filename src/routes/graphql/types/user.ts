@@ -1,6 +1,6 @@
 import { GraphQLFloat, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { UUIDType } from "./uuid.js";
-import { ID } from "./common.js";
+import { Context, ID, NoArgs } from "./common.js";
 import { profileType } from "./profile.js";
 import { getProfileByUserId } from "../resolvers/profileResolvers.js";
 import { postType } from "./post.js";
@@ -22,19 +22,19 @@ export const userType = new GraphQLObjectType({
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
     profile: { 
       type: profileType as GraphQLObjectType,
-      resolve: async(source: User) => await getProfileByUserId(source.id),
+      resolve: async(source: User, _: NoArgs, context: Context) => await getProfileByUserId(source.id, context),
     },
     posts: {
       type: new GraphQLList(postType),
-      resolve: async(source: User) => await getPostsByUserId(source.id),
+      resolve: async(source: User, _: NoArgs, context: Context) => await getPostsByUserId(source.id, context),
     },
     userSubscribedTo: {
       type: new GraphQLList(userType),
-      resolve :async (source: User) => await getUserSubscriptions(source.id),
+      resolve :async (source: User, _: NoArgs, context: Context) => await getUserSubscriptions(source.id, context),
     },
     subscribedToUser: {
       type: new GraphQLList(userType),
-      resolve :async (source: User) => await getUserFollowers(source.id),
+      resolve: async (source: User, _: NoArgs, context: Context) => await getUserFollowers(source.id, context),
     }
   }),
 });

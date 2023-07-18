@@ -15,6 +15,7 @@ const rootValue = {
 };
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
+  const { prisma } = fastify;
   fastify.route({
     url: '/',
     method: 'POST',
@@ -36,6 +37,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         source: req.body.query,
         rootValue,
         variableValues: req.body.variables,
+        contextValue: { prisma }
       });
       return response;
     },

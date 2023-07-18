@@ -1,6 +1,6 @@
 import { GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { UUIDType } from "./uuid.js";
-import { ID } from "./common.js";
+import { Context, ID, NoArgs } from "./common.js";
 import { userType } from "./user.js";
 import { getUser } from "../resolvers/userResolvers.js";
 
@@ -19,8 +19,8 @@ export const postType = new GraphQLObjectType({
     title: { type: new GraphQLNonNull(GraphQLString) },
     content: { type: new GraphQLNonNull(GraphQLString) },
     author: {
-      type: userType as GraphQLObjectType,
-      resolve: async (source: Post) => await getUser({ id: source.authorId }),
+      type: userType,
+      resolve: async (source: Post, _: NoArgs, context: Context) => await getUser({ id: source.authorId }, context),
     },
   }),
 });

@@ -1,7 +1,7 @@
 import { GraphQLBoolean, GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType } from "graphql";
 import { UUIDType } from "./uuid.js";
 import { memberType, memberTypeIdEnum } from "./member.js";
-import { ID } from "./common.js";
+import { Context, ID, NoArgs } from "./common.js";
 import { MemberTypeId } from "../../member-types/schemas.js";
 import { getMemberType } from "../resolvers/memberTypeResolvers.js";
 import { userType } from "./user.js";
@@ -24,11 +24,11 @@ export const profileType = new GraphQLObjectType({
     yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
     memberType: {
       type: new GraphQLNonNull(memberType),
-      resolve: async (source: Profile) => await getMemberType({id: source.memberTypeId }),
+      resolve: async (source: Profile, _: NoArgs, context: Context) => await getMemberType({id: source.memberTypeId }, context),
     },
     user: {
       type: userType as GraphQLObjectType,
-      resolve: async (source: Profile) => await getUser({ id: source.userId }),
+      resolve: async (source: Profile, _: NoArgs, context: Context) => await getUser({ id: source.userId }, context),
     },
   }),
 });
