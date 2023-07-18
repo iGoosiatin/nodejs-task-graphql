@@ -11,19 +11,19 @@ export const getUser = async (args: ID) => {
     },
   });
   return user;
-}
+};
 
 const getUsers = async () => {
   const users = await prisma.user.findMany();
   return users;
-}
+};
 
 const createUser = async (args: { dto: UserInput }) => {
   const user = await prisma.user.create({
     data: args.dto
   });
   return user;
-}
+};
 
 const changeUser = async (args: ID & { dto: Partial<UserInput> }) => {
   try {
@@ -37,8 +37,7 @@ const changeUser = async (args: ID & { dto: Partial<UserInput> }) => {
   } catch {
     return null;
   }
-
-}
+};
 
 const deleteUser = async (args: ID) => {
   try {
@@ -51,7 +50,7 @@ const deleteUser = async (args: ID) => {
   } catch {
     return null;
   }
-}
+};
 
 export default {
   user: getUser,
@@ -59,18 +58,18 @@ export default {
   createUser,
   changeUser,
   deleteUser,
-}
+};
 
 export const getUserSubscriptions = async (subscriberId: string) => {
   const subscriptions = await prisma.user.findMany(
     { where: { subscribedToUser: { some: { subscriberId } } } }
   );
   return subscriptions;
-}
+};
 
 export const getUserFollowers = async (authorId: string) => {
   const followers = await prisma.user.findMany(
     { where: { userSubscribedTo: { some: { authorId } } } }
   );
   return followers;
-}
+};

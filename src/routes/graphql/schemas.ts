@@ -97,11 +97,23 @@ const mutation = new GraphQLObjectType({
         dto: { type: createPostInputType }
       },
     },
+    deletePost: {
+      type: UUIDType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      }
+    },
     createProfile: {
       type: profileType,
       args: {
         dto: { type: createProfileInputType }
       },
+    },
+    deleteProfile: {
+      type: UUIDType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      }
     },
   },
 });

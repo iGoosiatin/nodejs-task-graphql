@@ -25,10 +25,24 @@ const createPost = async (args: { dto: PostInput }) => {
   return post;
 };
 
+const deletePost = async (args: ID) => {
+  try {
+    await prisma.post.delete({
+      where: {
+        id: args.id,
+      },
+    });
+    return args.id;
+  } catch {
+    return null;
+  }
+};
+
 export default {
   post: getPost,
   posts: getPosts,
   createPost,
+  deletePost,
 };
 
 export const getPostsByUserId = async (authorId: string) => {

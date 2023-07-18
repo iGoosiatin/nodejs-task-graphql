@@ -29,10 +29,24 @@ const createProfile = async (args: { dto: ProfileInput }) => {
   }
 };
 
+const deleteProfile = async (args: ID) => {
+  try {
+    await prisma.profile.delete({
+      where: {
+        id: args.id,
+      },
+    });
+    return args.id;
+  } catch {
+    return null;
+  }
+};
+
 export default {
   profile: getProfile,
   profiles: getProfiles,
   createProfile,
+  deleteProfile,
 };
 
 export const getProfileByUserId = async (userId: string) => {
