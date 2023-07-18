@@ -1,5 +1,13 @@
-import { GraphQLEnumType, GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType } from "graphql";
+import { GraphQLEnumType, GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType } from "graphql";
 import { MemberTypeId } from '../../member-types/schemas.js'
+import { profileType } from "./profile.js";
+import { getProfilesByMemberTypeId } from "../resolvers/profileResolvers.js";
+
+interface MemberType {
+  id: MemberTypeId,
+  discount: number,
+  postsLimitPerMonth: number
+}
 
 export const memberTypeIdEnum = new GraphQLEnumType({
   name: 'MemberTypeId',
@@ -15,9 +23,13 @@ export const memberTypeIdEnum = new GraphQLEnumType({
 
 export const memberType = new GraphQLObjectType({
   name: 'Member',
-  fields: {
+  fields: () => ({
     id: { type: memberTypeIdEnum },
     discount: { type: new GraphQLNonNull(GraphQLFloat) },
     postsLimitPerMonth: { type: new GraphQLNonNull(GraphQLInt) },
-  },
+    profiles: {
+      type: new GraphQLList(profileType),
+      resolve: async (source: MemberType) => await getProfilesByMemberTypeId(source.id),
+    },
+  }),
 });

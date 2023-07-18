@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { ID } from "../types/common.js";
 import { ProfileInput } from "../types/profile.js";
+import { MemberTypeId } from "../../member-types/schemas.js";
 
 const prisma = new PrismaClient();
 
@@ -58,3 +59,8 @@ export const getProfileByUserId = async (userId: string) => {
   });
   return profile;
 };
+
+export const getProfilesByMemberTypeId = async (memberTypeId: MemberTypeId) => {
+  const profiles = await prisma.profile.findMany({ where: { memberTypeId } });
+  return profiles;
+}
