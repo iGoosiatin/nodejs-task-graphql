@@ -6,6 +6,7 @@ import userResolvers from './resolvers/userResolvers.js';
 import memberTypeResolvers from './resolvers/memberTypeResolvers.js';
 import postResolvers from './resolvers/postResolvers.js';
 import profileResolvers from './resolvers/profileResolvers.js';
+import { buildDataLoaders } from './dataLoaderBuilder.js';
 
 const rootValue = {
   ...userResolvers,
@@ -16,6 +17,9 @@ const rootValue = {
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
+
+  const dataLoaders = buildDataLoaders(prisma);
+
   fastify.route({
     url: '/',
     method: 'POST',
@@ -37,7 +41,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         source: req.body.query,
         rootValue,
         variableValues: req.body.variables,
-        contextValue: { prisma }
+        contextValue: { prisma, ...dataLoaders }
       });
       return response;
     },

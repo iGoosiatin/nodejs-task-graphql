@@ -3,7 +3,6 @@ import { UUIDType } from "./uuid.js";
 import { memberType, memberTypeIdEnum } from "./member.js";
 import { Context, ID, NoArgs } from "./common.js";
 import { MemberTypeId } from "../../member-types/schemas.js";
-import { getMemberType } from "../resolvers/memberTypeResolvers.js";
 import { userType } from "./user.js";
 import { getUser } from "../resolvers/userResolvers.js";
 
@@ -24,7 +23,7 @@ export const profileType = new GraphQLObjectType({
     yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
     memberType: {
       type: new GraphQLNonNull(memberType),
-      resolve: async (source: Profile, _: NoArgs, context: Context) => await getMemberType({id: source.memberTypeId }, context),
+      resolve: async (source: Profile, _: NoArgs, { memberTypeLoader }: Context) => memberTypeLoader.load(source.memberTypeId),
     },
     user: {
       type: userType as GraphQLObjectType,

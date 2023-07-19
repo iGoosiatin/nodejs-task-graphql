@@ -45,8 +45,3 @@ export default {
   changePost,
   deletePost,
 };
-
-export const getPostsByUserId = async (authorId: string, { prisma }: Context) => {
-  const posts = await prisma.post.findMany({ where: { authorId } });
-  return posts;
-};

@@ -1,6 +1,6 @@
 import { Context, ID, NoArgs } from "../types/common.js";
 
-export const getMemberType = async ({ id }: ID, { prisma }: Context) => {
+const getMemberType = async ({ id }: ID, { prisma }: Context) => {
   const memberType = await prisma.memberType.findUnique({ where: { id } });
   return memberType;
 }

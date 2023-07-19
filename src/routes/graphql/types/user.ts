@@ -4,7 +4,6 @@ import { Context, ID, NoArgs } from "./common.js";
 import { profileType } from "./profile.js";
 import { getProfileByUserId } from "../resolvers/profileResolvers.js";
 import { postType } from "./post.js";
-import { getPostsByUserId } from "../resolvers/postResolvers.js";
 import { getUserFollowers, getUserSubscriptions } from "../resolvers/userResolvers.js";
 
 export interface UserInput {
@@ -26,7 +25,7 @@ export const userType = new GraphQLObjectType({
     },
     posts: {
       type: new GraphQLList(postType),
-      resolve: async(source: User, _: NoArgs, context: Context) => await getPostsByUserId(source.id, context),
+      resolve: async(source: User, _: NoArgs, { postsByAuthorIdLoader }: Context) => postsByAuthorIdLoader.load(source.id),
     },
     userSubscribedTo: {
       type: new GraphQLList(userType),
