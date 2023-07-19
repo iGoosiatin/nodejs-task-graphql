@@ -2,7 +2,6 @@ import { GraphQLFloat, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, Grap
 import { UUIDType } from "./uuid.js";
 import { Context, ID, NoArgs } from "./common.js";
 import { profileType } from "./profile.js";
-import { getProfileByUserId } from "../resolvers/profileResolvers.js";
 import { postType } from "./post.js";
 export interface UserInput {
   name: string;
@@ -19,7 +18,7 @@ export const userType = new GraphQLObjectType({
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
     profile: { 
       type: profileType as GraphQLObjectType,
-      resolve: async(source: User, _: NoArgs, context: Context) => await getProfileByUserId(source.id, context),
+      resolve: async(source: User, _: NoArgs, { profileByUserIdLoader }: Context) => profileByUserIdLoader.load(source.id),
     },
     posts: {
       type: new GraphQLList(postType),

@@ -1,4 +1,4 @@
-import { MemberType, PrismaClient } from "@prisma/client";
+import { MemberType, PrismaClient, Profile } from "@prisma/client";
 import DataLoader from "dataloader";
 import { MemberTypeId } from "../member-types/schemas.js";
 import { Post } from "./types/post.js";
@@ -6,6 +6,7 @@ import { User } from "./types/user.js";
 
 export interface DataLoaders {
   postsByAuthorIdLoader: DataLoader<string, Post[]>,
+  profileByUserIdLoader: DataLoader<string, Profile>,
   memberTypeLoader: DataLoader<MemberTypeId, MemberType>,
   userSubscriptionsLoader: DataLoader<string, User[]>,
   userFollowersLoader: DataLoader<string, User[]>,
@@ -25,6 +26,19 @@ export const buildDataLoaders = (prisma: PrismaClient): DataLoaders => {
     return ids.map(id => postMap[id]);
   };
 
+  const batchGetProfileByUserrId = async (ids: readonly string[]) => {
+    const profiles = await prisma.profile.findMany({
+      where: { userId: { in: ids as string[] } },
+    });
+
+    const profileMap = profiles.reduce((acc, profile) => {
+      acc[profile.userId] = profile;
+      return acc;
+    }, {} as Record<string, Profile>);
+
+    return ids.map(id => profileMap[id]);
+  };
+
   const batchGetMemberType = async (ids: readonly MemberTypeId[]) => {
     const memberTypes = await prisma.memberType.findMany({
       where: { id: { in: ids as MemberTypeId[] }}
@@ -39,49 +53,41 @@ export const buildDataLoaders = (prisma: PrismaClient): DataLoaders => {
   };
 
   const batchGetUserSubscriptions = async(ids: readonly string[]) => {
-    const subscriptions = await prisma.subscribersOnAuthors.findMany({
-      where: { subscriberId: { in: ids as string[] } }
-    });
-    const authors = await prisma.user.findMany({
-      where: { subscribedToUser: { some: { subscriberId: { in: ids as string[] } } } }
+    const users = await prisma.user.findMany({
+      where: { subscribedToUser: { some: { subscriberId: { in: ids as string[] } } } },
+      include: { subscribedToUser: { select: { subscriberId: true } },
+    }
     });
 
-    const authorMap = authors.reduce((acc, author) => {
-      acc[author.id] = author;
-      return acc;
-    }, {} as Record<string, User>);
-    
-    const subscriptionMap = subscriptions.reduce((acc, { subscriberId, authorId}) => {
-      acc[subscriberId] ? acc[subscriberId].push(authorMap[authorId]) : acc[subscriberId] = [authorMap[authorId]];
+    const usersMap = users.reduce((acc, {subscribedToUser, ...user}) => {
+      subscribedToUser.forEach(({ subscriberId }) => {
+        acc[subscriberId] ? acc[subscriberId].push(user) : acc[subscriberId] = [user];
+      })
       return acc;
     }, {} as Record<string, User[]>);
 
-    return ids.map(id => subscriptionMap[id]);
+    return ids.map(id => usersMap[id]);
   };
 
   const batchGetUserFollowers = async(ids: readonly string[]) => {
-    const subscriptions = await prisma.subscribersOnAuthors.findMany({
-      where: { authorId: { in: ids as string[] } }
-    });
-    const followers = await prisma.user.findMany({
-      where: { userSubscribedTo: { some: { authorId: { in: ids as string[] } } } }
+    const users = await prisma.user.findMany({
+      where: { userSubscribedTo: { some: { authorId: { in: ids as string[] } } } },
+      include: { userSubscribedTo: { select: { authorId: true } } },
     });
 
-    const followerMap = followers.reduce((acc, follower) => {
-      acc[follower.id] = follower;
-      return acc;
-    }, {} as Record<string, User>);
-    
-    const subscriptionMap = subscriptions.reduce((acc, { subscriberId, authorId}) => {
-      acc[authorId] ? acc[authorId].push(followerMap[subscriberId]) : acc[authorId] = [followerMap[subscriberId]];
+    const userMap = users.reduce((acc, {userSubscribedTo, ...user}) => {
+      userSubscribedTo.forEach(({ authorId }) => {
+        acc[authorId] ? acc[authorId].push(user) : acc[authorId] = [user];
+      })
       return acc;
     }, {} as Record<string, User[]>);
 
-    return ids.map(id => subscriptionMap[id]);
+    return ids.map(id => userMap[id]);
   }
 
   return {
     postsByAuthorIdLoader: new DataLoader(batchGetPostsByAuthorId),
+    profileByUserIdLoader: new DataLoader(batchGetProfileByUserrId),
     memberTypeLoader: new DataLoader(batchGetMemberType),
     userSubscriptionsLoader: new DataLoader(batchGetUserSubscriptions),
     userFollowersLoader: new DataLoader(batchGetUserFollowers),
