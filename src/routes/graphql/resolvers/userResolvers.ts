@@ -59,7 +59,6 @@ const unsubscribeFrom = async ({ userId: subscriberId, authorId }: Subscription,
   }
 };
 
-
 export default {
   user: getUser,
   users: getUsers,
@@ -68,18 +67,4 @@ export default {
   deleteUser,
   subscribeTo,
   unsubscribeFrom,
-};
-
-export const getUserSubscriptions = async (subscriberId: string, { prisma }: Context) => {
-  const subscriptions = await prisma.user.findMany(
-    { where: { subscribedToUser: { some: { subscriberId } } } }
-  );
-  return subscriptions;
-};
-
-export const getUserFollowers = async (authorId: string, { prisma }: Context) => {
-  const followers = await prisma.user.findMany(
-    { where: { userSubscribedTo: { some: { authorId } } } }
-  );
-  return followers;
 };

@@ -13,4 +13,4 @@ const getMemberTypes = async (_: NoArgs, { prisma }: Context) => {
 export default {
   memberType: getMemberType,
   memberTypes: getMemberTypes,
-}
+};
