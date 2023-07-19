@@ -50,8 +50,3 @@ export default {
   changeProfile,
   deleteProfile,
 };
-
-export const getProfilesByMemberTypeId = async (memberTypeId: MemberTypeId, { prisma }: Context) => {
-  const profiles = await prisma.profile.findMany({ where: { memberTypeId } });
-  return profiles;
-}

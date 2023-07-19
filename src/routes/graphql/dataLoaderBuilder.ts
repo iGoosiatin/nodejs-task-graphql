@@ -7,6 +7,7 @@ import { User } from "./types/user.js";
 export interface DataLoaders {
   postsByAuthorIdLoader: DataLoader<string, Post[]>,
   profileByUserIdLoader: DataLoader<string, Profile>,
+  profilesByMemberTypeIdLoader: DataLoader<string, Profile[]>,
   memberTypeLoader: DataLoader<MemberTypeId, MemberType>,
   userSubscriptionsLoader: DataLoader<string, User[]>,
   userFollowersLoader: DataLoader<string, User[]>,
@@ -38,6 +39,19 @@ export const buildDataLoaders = (prisma: PrismaClient): DataLoaders => {
 
     return ids.map(id => profileMap[id]);
   };
+
+  const batchGetProfilesByMemberTypeId = async (ids: readonly MemberTypeId[]) => {
+    const profiles = await prisma.profile.findMany({
+      where: { memberTypeId: { in: ids as MemberTypeId[] } },
+    });
+
+    const profileMap = profiles.reduce((acc, profile) => {
+      acc[profile.memberTypeId] ? acc[profile.memberTypeId].push(profile) : acc[profile.memberTypeId] = [profile];
+      return acc;
+    }, {} as Record<string, Profile[]>);
+
+    return ids.map(id => profileMap[id]);
+  }
 
   const batchGetMemberType = async (ids: readonly MemberTypeId[]) => {
     const memberTypes = await prisma.memberType.findMany({
@@ -83,11 +97,12 @@ export const buildDataLoaders = (prisma: PrismaClient): DataLoaders => {
     }, {} as Record<string, User[]>);
 
     return ids.map(id => userMap[id]);
-  }
+  };
 
   return {
     postsByAuthorIdLoader: new DataLoader(batchGetPostsByAuthorId),
     profileByUserIdLoader: new DataLoader(batchGetProfileByUserrId),
+    profilesByMemberTypeIdLoader: new DataLoader(batchGetProfilesByMemberTypeId),
     memberTypeLoader: new DataLoader(batchGetMemberType),
     userSubscriptionsLoader: new DataLoader(batchGetUserSubscriptions),
     userFollowersLoader: new DataLoader(batchGetUserFollowers),
