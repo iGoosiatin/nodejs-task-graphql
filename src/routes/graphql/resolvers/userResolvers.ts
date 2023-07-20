@@ -1,16 +1,24 @@
-import { UserInput } from "../types/user.js";
+import { ResolveTree, parseResolveInfo, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info';
+import { UserInput, userType } from "../types/user.js";
 import { Context, ID, NoArgs, SubscriptionMutationInput } from "../types/common.js";
+import { GraphQLList, GraphQLResolveInfo } from "graphql";
 
 const getUser = async ({ id }: ID, { userLoader }: Context) => {
   const user = await userLoader.load(id);
   return user;
 };
 
-const getUsers = async (_: NoArgs, { prisma, userLoader }: Context) => {
+const getUsers = async (_: NoArgs, { prisma, userLoader }: Context, resolveInfo: GraphQLResolveInfo) => {
+  const parsedResolveInfoFragment = parseResolveInfo(resolveInfo);
+  const { fields }: { fields: { [key in string]: ResolveTree} } = simplifyParsedResolveInfoFragmentWithType(
+    parsedResolveInfoFragment as ResolveTree,
+    new GraphQLList(userType)
+  );
+
   const users = await prisma.user.findMany({
     include: {
-      userSubscribedTo: true,
-      subscribedToUser: true,
+      userSubscribedTo: !!fields.userSubscribedTo,
+      subscribedToUser: !!fields.subscribedToUser,
     },
   });
 
