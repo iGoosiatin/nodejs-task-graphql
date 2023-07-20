@@ -1,13 +1,29 @@
 import { UserInput } from "../types/user.js";
-import { Context, ID, NoArgs, Subscription } from "../types/common.js";
+import { Context, ID, NoArgs, SubscriptionMutationInput } from "../types/common.js";
 
 export const getUser = async ({ id }: ID, { prisma }: Context) => {
-  const user = await prisma.user.findUnique({ where: { id } });
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      userSubscribedTo: true,
+      subscribedToUser: true,
+    },
+  });
   return user;
 };
 
-const getUsers = async (_: NoArgs, { prisma }: Context) => {
-  const users = await prisma.user.findMany();
+const getUsers = async (_: NoArgs, { prisma, userLoader }: Context) => {
+  const users = await prisma.user.findMany({
+    include: {
+      userSubscribedTo: true,
+      subscribedToUser: true,
+    },
+  });
+
+  users.forEach(user => {
+    userLoader.prime(user.id, user);
+  });
+
   return users;
 };
 
@@ -37,7 +53,7 @@ const deleteUser = async ({ id }: ID, { prisma }: Context) => {
   }
 };
 
-const subscribeTo = async ({ userId: id, authorId }: Subscription, { prisma }: Context) => {
+const subscribeTo = async ({ userId: id, authorId }: SubscriptionMutationInput, { prisma }: Context) => {
   try {
     const user = prisma.user.update({
       where: { id },
@@ -49,7 +65,7 @@ const subscribeTo = async ({ userId: id, authorId }: Subscription, { prisma }: C
   }
 };
 
-const unsubscribeFrom = async ({ userId: subscriberId, authorId }: Subscription, { prisma }: Context) => {
+const unsubscribeFrom = async ({ userId: subscriberId, authorId }: SubscriptionMutationInput, { prisma }: Context) => {
   try {
     await prisma.subscribersOnAuthors.delete({
       where: { subscriberId_authorId: { subscriberId, authorId } },

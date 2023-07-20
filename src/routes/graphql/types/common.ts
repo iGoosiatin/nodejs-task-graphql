@@ -6,6 +6,11 @@ export interface ID {
 };
 
 export interface Subscription {
+  subscriberId: string;
+  authorId: string;
+};
+
+export interface SubscriptionMutationInput {
   userId: string;
   authorId: string;
 };

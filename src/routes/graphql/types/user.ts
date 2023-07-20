@@ -1,6 +1,6 @@
 import { GraphQLFloat, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { UUIDType } from "./uuid.js";
-import { Context, ID, NoArgs } from "./common.js";
+import { Context, ID, NoArgs, Subscription } from "./common.js";
 import { profileType } from "./profile.js";
 import { postType } from "./post.js";
 export interface UserInput {
@@ -8,7 +8,10 @@ export interface UserInput {
   balance: number;
 };
 
-export interface User extends ID, UserInput {};
+export interface User extends ID, UserInput {
+  userSubscribedTo?: Subscription[];
+  subscribedToUser?: Subscription[];
+};
 
 export const userType = new GraphQLObjectType({
   name: "User",
@@ -26,11 +29,13 @@ export const userType = new GraphQLObjectType({
     },
     userSubscribedTo: {
       type: new GraphQLList(userType),
-      resolve: async (source: User, _: NoArgs, { userSubscriptionsLoader }: Context) => userSubscriptionsLoader.load(source.id),
+      resolve: async (source: User, _: NoArgs, { userLoader }: Context) =>
+        userLoader.loadMany(source.userSubscribedTo ? source.userSubscribedTo.map(({ authorId }) => authorId) : []),
     },
     subscribedToUser: {
       type: new GraphQLList(userType),
-      resolve: async (source: User, _: NoArgs, { userFollowersLoader}: Context) => userFollowersLoader.load(source.id),
+      resolve: async (source: User, _: NoArgs, { userLoader }: Context) =>
+        userLoader.loadMany(source.subscribedToUser ? source.subscribedToUser.map(({ subscriberId }) => subscriberId) : []),
     }
   }),
 });
