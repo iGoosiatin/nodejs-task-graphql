@@ -1,14 +1,8 @@
 import { UserInput } from "../types/user.js";
 import { Context, ID, NoArgs, SubscriptionMutationInput } from "../types/common.js";
 
-export const getUser = async ({ id }: ID, { prisma }: Context) => {
-  const user = await prisma.user.findUnique({
-    where: { id },
-    include: {
-      userSubscribedTo: true,
-      subscribedToUser: true,
-    },
-  });
+const getUser = async ({ id }: ID, { userLoader }: Context) => {
+  const user = await userLoader.load(id);
   return user;
 };
 

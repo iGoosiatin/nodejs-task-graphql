@@ -1,6 +1,5 @@
 import { Context, ID, NoArgs } from "../types/common.js";
 import { ProfileInput } from "../types/profile.js";
-import { MemberTypeId } from "../../member-types/schemas.js";
 
 
 const getProfile = async ({ id }: ID, { prisma }: Context) => {

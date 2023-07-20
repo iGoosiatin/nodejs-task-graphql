@@ -4,7 +4,6 @@ import { memberType, memberTypeIdEnum } from "./member.js";
 import { Context, ID, NoArgs } from "./common.js";
 import { MemberTypeId } from "../../member-types/schemas.js";
 import { userType } from "./user.js";
-import { getUser } from "../resolvers/userResolvers.js";
 
 export interface ProfileInput {
   isMale: boolean;
@@ -27,7 +26,7 @@ export const profileType = new GraphQLObjectType({
     },
     user: {
       type: userType as GraphQLObjectType,
-      resolve: async (source: Profile, _: NoArgs, context: Context) => await getUser({ id: source.userId }, context),
+      resolve: async (source: Profile, _: NoArgs, { userLoader }: Context) => userLoader.load(source.userId),
     },
   }),
 });
