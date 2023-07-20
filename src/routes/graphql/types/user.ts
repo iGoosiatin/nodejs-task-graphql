@@ -30,12 +30,16 @@ export const userType = new GraphQLObjectType({
     userSubscribedTo: {
       type: new GraphQLList(userType),
       resolve: async (source: User, _: NoArgs, { userLoader }: Context) =>
-        userLoader.loadMany(source.userSubscribedTo ? source.userSubscribedTo.map(({ authorId }) => authorId) : []),
+        source.userSubscribedTo
+          ? userLoader.loadMany(source.userSubscribedTo.map(({ authorId }) => authorId))
+          : null
     },
     subscribedToUser: {
       type: new GraphQLList(userType),
       resolve: async (source: User, _: NoArgs, { userLoader }: Context) =>
-        userLoader.loadMany(source.subscribedToUser ? source.subscribedToUser.map(({ subscriberId }) => subscriberId) : []),
+        source.subscribedToUser
+          ? userLoader.loadMany(source.subscribedToUser.map(({ subscriberId }) => subscriberId))
+          : null
     }
   }),
 });
