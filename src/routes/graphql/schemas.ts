@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Type } from '@fastify/type-provider-typebox';
 import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
 import { UUIDType } from './types/uuid.js';
@@ -40,7 +39,7 @@ const query = new GraphQLObjectType({
       type: new GraphQLList(userType),
     },
     memberType: {
-      type: memberType,
+      type: memberType as GraphQLObjectType,
       args: {
         id: { type: new GraphQLNonNull(memberTypeIdEnum) },
       },
@@ -49,7 +48,7 @@ const query = new GraphQLObjectType({
       type: new GraphQLList(memberType),
     },
     post: {
-      type: postType,
+      type: postType as GraphQLObjectType,
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
@@ -58,7 +57,7 @@ const query = new GraphQLObjectType({
       type: new GraphQLList(postType),
     },
     profile: {
-      type: profileType,
+      type: profileType as GraphQLObjectType,
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
@@ -92,13 +91,13 @@ const mutation = new GraphQLObjectType({
       }
     },
     createPost: {
-      type: postType,
+      type: postType as GraphQLObjectType,
       args: {
         dto: { type: createPostInputType }
       },
     },
     changePost: {
-      type: postType,
+      type: postType as GraphQLObjectType,
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
         dto: { type: changePostInputType }
@@ -111,13 +110,13 @@ const mutation = new GraphQLObjectType({
       }
     },
     createProfile: {
-      type: profileType,
+      type: profileType as GraphQLObjectType,
       args: {
         dto: { type: createProfileInputType }
       },
     },
     changeProfile: {
-      type: profileType,
+      type: profileType as GraphQLObjectType,
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
         dto: { type: changeProfileInputType }
